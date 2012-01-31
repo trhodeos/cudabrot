@@ -3,7 +3,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare")
 
 ######## includes ########
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+${CMAKE_CURRENT_SOURCE_DIR} ${CUDA_INCLUDE_DIRS})
 
 ######## main sources ########
 set(CUDABROT_SOURCES
@@ -31,8 +32,9 @@ add_executable(cudabrot main.cpp
   ${LEVIATHAN_SOURCES}
 )
 target_link_libraries(cudabrot
-   ${CUDA_LIBRARY}
+   ${CUDA_LIBRARIES}
    ${OpenGL_LIBRARY}
    ${GLUT_LIBRARY}
+   ${GLEW_LIBRARY}
    ${EXTRA_LIBS}
 )
