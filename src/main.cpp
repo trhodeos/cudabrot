@@ -1,33 +1,27 @@
 #include "config.h"
 
-#include <iostream>
+// these don't like to be included last
+#include "os_gl.h"
 
-/* gl stuff */
-#include <GL/glew.h>
-#ifdef APPLE
-#include <OpenGL/GL.h>
-#include <OpenGL/GLU.h>
-#include <GLUT/GLUT.h>
-#else // APPLE
-#include <GL/GL.h>
-#include <GL/GLU.h>
-#include <GL/GLUT.h>
-#endif // APPLE
+#include <iostream>
 
 #include <cuda.h>
 #include <cuda_gl_interop.h>
 #include <cuda_runtime.h>
 
-void display_callback() {}
-void keyboard_callback(unsigned char key, int x, int y) {}
-void mouse_callback(int button, int state, int x, int y) {}
-void motion_callback(int x, int y) {}
+#include "cudabrot.h"
+
+void display_callback();
+void keyboard_callback(unsigned char key, int x, int y);
+void mouse_callback(int button, int state, int x, int y);
+void motion_callback(int x, int y);
 
 bool init_gl(int argc, char* argv[]);
 
-// TEMPORARY GLOBAL VARIABLES
-const unsigned int window_width = 640;
-const unsigned int window_height = 480;
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
+Cudabrot* cudabrot_;
 
 int main(int argc, char* argv[]) {
 
@@ -37,7 +31,7 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  /* init CUDA */
+  cudabrot_ = new Cudabrot(WINDOW_WIDTH, WINDOW_HEIGHT);
 
   /* setup device memory */
 
@@ -53,7 +47,7 @@ bool init_gl(int argc, char* argv[]) {
   /* set up glut parameters */
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-  glutInitWindowSize(window_width, window_height);
+  glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
   glutCreateWindow("Cudabrot");
   glutDisplayFunc(display_callback);
   glutKeyboardFunc(keyboard_callback);
@@ -68,7 +62,7 @@ bool init_gl(int argc, char* argv[]) {
   }
 
   /* set up viewport */
-  glViewport(0, 0, window_width, window_height);
+  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glDisable(GL_DEPTH_TEST); // no depth test for 2d stuffz
 
@@ -82,3 +76,13 @@ bool init_gl(int argc, char* argv[]) {
 
   return true;
 }
+
+void display_callback() {
+  cudabrot_->Run();
+  cudabrot_->Draw();
+}
+
+void keyboard_callback(unsigned char key, int x, int y) {}
+void mouse_callback(int button, int state, int x, int y) {}
+void motion_callback(int x, int y) {}
+

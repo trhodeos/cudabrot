@@ -8,10 +8,12 @@ ${CMAKE_CURRENT_SOURCE_DIR} ${CUDA_INCLUDE_DIRS})
 
 ######## main sources ########
 set(CUDABROT_SOURCES
-# sources here
+    cudabrot.cpp
 )
 set(CUDABROT_HEADERS
-# sources here
+    cudabrot.h
+
+    os_gl.h
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
@@ -29,7 +31,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 ######## main library ########
 add_executable(cudabrot main.cpp
-  ${LEVIATHAN_SOURCES}
+  ${CUDABROT_SOURCES}
 )
 target_link_libraries(cudabrot
    ${CUDA_LIBRARIES}
