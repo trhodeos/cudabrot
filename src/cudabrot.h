@@ -8,6 +8,9 @@ public:
   void Run();
   void Draw();
 
+  void Zoom(unsigned int new_cx, unsigned int new_cy);
+  void UnZoom(unsigned int new_cx, unsigned int new_cy);
+
 private:
   void CreateTexture();
   void DeleteTexture();
@@ -23,4 +26,8 @@ private:
 
   GLuint texture_id_;
   GLuint pbo_;
+
+  float cx_;
+  float cy_;
+  float scale_;
 };

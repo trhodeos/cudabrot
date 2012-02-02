@@ -6,13 +6,17 @@
 
 #include <iostream>
 
-extern void launch_cudabrot_kernel(unsigned char* a, unsigned int width, unsigned int height);
+extern void launch_cudabrot_kernel(unsigned char* a, unsigned int width, unsigned int height,
+                                   float cx, float cy, float scale);
 
 Cudabrot::Cudabrot(unsigned int image_width, unsigned int image_height) :
     image_width_(image_width),
     image_height_(image_height),
     texture_id_(0),
-    pbo_(0)
+    pbo_(0),
+    cx_(0),
+    cy_(0),
+    scale_(.02)
 {
   cudaGLSetGLDevice(0);
 
@@ -32,25 +36,23 @@ void Cudabrot::Run() {
   if (pbo_ > 0) {
     cudaGLMapBufferObject((void**)&dptr, pbo_);
     cudaMemset(dptr, 0, image_width_ * image_height_ * 4 * sizeof(unsigned char));
-    launch_cudabrot_kernel(dptr, image_width_, image_height_);
-    /*    int i = image_width_ / 2;
-          int j = image_height_ / 2;
-          for (i = 0; i < image_width_; i++) {
-          for(j = 0; j < image_height_; j++) {
-          if (h_ptr[4*(image_height_ * i + j) + 0] &&
-          h_ptr[4*(image_height_ * i + j) + 1] &&
-          h_ptr[4*(image_height_ * i + j) + 2] &&
-          h_ptr[4*(image_height_ * i + j) + 3]) {
-          std::cout << "Value of (" << i << ", " << j << "):\n" <<
-          (unsigned int) h_ptr[4*(image_height_ * i + j) + 0] << " " <<
-          (unsigned int) h_ptr[4*(image_height_ * i + j) + 1] << " " <<
-          (unsigned int) h_ptr[4*(image_height_ * i + j) + 2] << " " <<
-          (unsigned int) h_ptr[4*(image_height_ * i + j) + 3] << std::endl;
-          }
-          }
-          }*/
+    launch_cudabrot_kernel(dptr, image_width_, image_height_, cx_, cy_, scale_);
     cudaGLUnmapBufferObject(pbo_);
   }
+}
+
+void Cudabrot::Zoom(unsigned int new_cx, unsigned int new_cy) {
+  cx_ = cx_ + scale_ * (new_cx - image_width_ / 2.0f);
+  cy_ = cy_ + scale_ * (new_cy - image_height_ / 2.0f);
+
+  scale_ = scale_ / 2.0f;
+}
+
+void Cudabrot::UnZoom(unsigned int new_cx, unsigned int new_cy) {
+  cx_ = cx_ + scale_ * (new_cx - image_width_ / 2.0f);
+  cy_ = cy_ + scale_ * (new_cy - image_height_ / 2.0f);
+
+  scale_ = scale_ * 2.0f;
 }
 
 void Cudabrot::Draw() {
@@ -58,7 +60,7 @@ void Cudabrot::Draw() {
     // bind our texture and pbo buffers
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo_);
     glBindTexture(GL_TEXTURE_2D, texture_id_);
-    
+
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image_width_, image_height_,
                    GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glBegin(GL_QUADS);
