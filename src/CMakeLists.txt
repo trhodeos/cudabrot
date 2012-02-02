@@ -8,13 +8,13 @@ ${CMAKE_CURRENT_SOURCE_DIR} ${CUDA_INCLUDE_DIRS})
 
 ######## main sources ########
 set(CUDABROT_SOURCES
-    cudabrot.cpp
-)
+    cudabrot.cpp)
+set(CUDA_SOURCES
+    cudabrot.cu)
 set(CUDABROT_HEADERS
     cudabrot.h
 
-    os_gl.h
-)
+    os_gl.h)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
@@ -30,13 +30,14 @@ endif (APPLE)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 ######## main library ########
+cuda_compile(CUDA_GENERATED ${CUDA_SOURCES})
 add_executable(cudabrot main.cpp
   ${CUDABROT_SOURCES}
-)
+  ${CUDA_GENERATED})
+
 target_link_libraries(cudabrot
    ${CUDA_LIBRARIES}
    ${OpenGL_LIBRARY}
    ${GLUT_LIBRARY}
    ${GLEW_LIBRARY}
-   ${EXTRA_LIBS}
-)
+   ${EXTRA_LIBS})

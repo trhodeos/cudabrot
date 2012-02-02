@@ -33,8 +33,6 @@ int main(int argc, char* argv[]) {
 
   cudabrot_ = new Cudabrot(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-  /* setup device memory */
-
   /* start opengl loop */
   glutMainLoop();
 
@@ -44,7 +42,7 @@ int main(int argc, char* argv[]) {
 }
 
 bool init_gl(int argc, char* argv[]) {
-  /* set up glut parameters */
+  /* argv up glut parameters */
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);

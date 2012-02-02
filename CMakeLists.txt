@@ -1,6 +1,8 @@
 project(cudabrot)
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
+
+set(CUDA_NVCC_FLAGS "--gpu-architecture=sm_11;")
 
 ######## general environment info ########
 include(cmake/)
